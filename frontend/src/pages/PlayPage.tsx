@@ -68,7 +68,7 @@ export function PlayPage() {
                     ← Мои игры
                 </Link>
                 <h1 className={styles.title}>{summary?.title ?? ' '}</h1>
-                {summary && <span className={styles.muted}>версия {summary.version}</span>}
+                {summary && <span className={styles.version}>v{summary.version}</span>}
             </div>
 
             {game.data ? (

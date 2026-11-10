@@ -3,24 +3,24 @@
 .player {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
 }
 
 .frame {
+    @include sticker;
     position: relative;
     width: 100%;
     // Почти весь экран под полосой челленджа и заголовком: игре нужно место, особенно на телефоне.
-    height: calc(100dvh - var(--hTopBar) - 170px);
+    height: calc(100dvh - var(--hTopBar) - 190px);
     min-height: 360px;
-    border: 1px solid var(--base-20);
-    border-radius: var(--brLarge);
     overflow: hidden;
-    background-color: var(--base-0);
+    background-color: var(--card);
 
     &:fullscreen {
         height: 100dvh;
         border: 0;
         border-radius: 0;
+        box-shadow: none;
     }
 
     iframe {
@@ -31,36 +31,27 @@
     }
 
     @include mobile {
-        height: calc(100dvh - var(--hTopBar) - 150px);
-        margin: 0 calc(-1 * var(--gutter));
-        width: calc(100% + 2 * var(--gutter));
-        border-left: 0;
-        border-right: 0;
-        border-radius: 0;
+        height: calc(100dvh - var(--hTopBar) - 170px);
+        box-shadow: 3px 3px 0 var(--shade);
     }
 }
 
 .controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
 }
 
 .button {
     @include reset-button;
-    @include focus-ring;
-    padding: 8px 14px;
-    border: 1px solid var(--base-20);
-    border-radius: var(--brBase);
-    background-color: var(--base-5);
-    font-weight: 600;
+    @include sticker-button(var(--card), var(--base-100));
+    padding: 9px 16px;
     font-size: 14px;
+}
 
-    &:hover {
-        border-color: var(--base-40);
-    }
-
-    &.danger {
-        color: var(--danger);
-    }
+.download {
+    @include reset-button;
+    @include sticker-button(var(--cat), var(--on-cat));
+    padding: 9px 16px;
+    font-size: 14px;
 }

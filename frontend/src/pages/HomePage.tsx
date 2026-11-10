@@ -13,7 +13,17 @@ const SERVER_NAME = 'bezmagii_project1_mcp';
 
 const kb = (bytes: number) => (bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} КБ` : `${(bytes / 1048576).toFixed(1)} МБ`);
 const time = (ts: number) =>
-    new Date(ts).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    new Date(ts).toLocaleString('ru-RU', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+
+// Последнее слово заголовка — под маркером, как «через день» в каталоге.
+const words = project.title.trim().split(/\s+/);
+const last = words.pop() ?? '';
+const head = words.join(' ');
 
 export function HomePage() {
     const { token, data, isPending } = useGames();
@@ -22,7 +32,9 @@ export function HomePage() {
     return (
         <article className={styles.page}>
             <header className={styles.hero}>
-                <h1 className={styles.title}>{project.title}</h1>
+                <h1 className={styles.title}>
+                    {head} <span className={styles.marker}>{last}</span>
+                </h1>
                 <p className={styles.lead}>
                     Подключите свою нейросеть к этому сайту по MCP и попросите игру. Через несколько секунд она появится здесь. Игры видите
                     только вы.
@@ -67,8 +79,14 @@ export function HomePage() {
             <section className={styles.section}>
                 <h2 className={styles.h2}>Что важно знать</h2>
                 <ul className={styles.notes}>
-                    <li>Сайт бесплатный, а нейросеть ваша. Claude Code работает по платной подписке Claude, из России напрямую он недоступен.</li>
-                    <li>Игры хранятся на сервере сайта. Аккаунтов нет: кто знает ваш адрес MCP, тот видит и меняет игры. Потеряете адрес, игры не вернуть.</li>
+                    <li>
+                        Сайт бесплатный, а нейросеть ваша. Claude Code работает по платной подписке Claude, из России напрямую он
+                        недоступен.
+                    </li>
+                    <li>
+                        Игры хранятся на сервере сайта. Аккаунтов нет: кто знает ваш адрес MCP, тот видит и меняет игры. Потеряете адрес,
+                        игры не вернуть.
+                    </li>
                     <li>Игра запускается в изолированной рамке. Она не видит сайт, ваши данные и интернет.</li>
                     <li>Нейросеть видит ошибки игры из вашего браузера, чтобы их исправить. Больше сайт ей ничего не передаёт.</li>
                     <li>До 10 игр, каждая до 10 МБ.</li>
@@ -117,19 +135,21 @@ function Connected({ token }: { token: string }) {
     return (
         <section className={styles.section}>
             <h2 className={styles.h2}>Подключение</h2>
-            <CopyField
-                label="Команда для Claude Code (выполните в терминале)"
-                value={`claude mcp add --scope user --transport http ${SERVER_NAME} ${url}`}
-                audit="copy-command"
-                secret
-            />
-            <CopyField label="Адрес MCP для других клиентов (тип HTTP)" value={url} audit="copy-url" secret />
-            <p className={styles.hint}>
-                Потом запустите Claude Code и напишите, например: <q>Сделай через {SERVER_NAME} игру: змейка с управлением свайпами</q>.
-            </p>
-            <p className={styles.muted}>
-                Адрес работает как пароль, он размыт на случай записи экрана. Сохраните его, чтобы открыть игры на другом устройстве.
-            </p>
+            <div className={styles.connect}>
+                <CopyField
+                    label="Команда для Claude Code (выполните в терминале)"
+                    value={`claude mcp add --scope user --transport http ${SERVER_NAME} ${url}`}
+                    audit="copy-command"
+                    secret
+                />
+                <CopyField label="Адрес MCP для других клиентов (тип HTTP)" value={url} audit="copy-url" secret />
+                <p className={styles.hint}>
+                    Потом запустите Claude Code и напишите, например: <q>Сделай через {SERVER_NAME} игру: змейка с управлением свайпами</q>.
+                </p>
+                <p className={styles.muted}>
+                    Адрес работает как пароль, он размыт на случай записи экрана. Сохраните его, чтобы открыть игры на другом устройстве.
+                </p>
+            </div>
         </section>
     );
 }
@@ -174,14 +194,21 @@ function Danger({ token }: { token: string }) {
 
     const wipe = async () => {
         if (!window.confirm('Удалить все игры и адрес MCP? Вернуть их не получится.')) return;
-        const { response } = await api.DELETE('/api/space', { headers: authHeaders(token) });
+        const { response } = await api.DELETE('/api/space', {
+            headers: authHeaders(token),
+        });
         if (!response.ok) return toast.show('Не получилось удалить, попробуйте ещё раз', 'error');
         setToken(null);
         toast.show('Всё удалено', 'success');
     };
 
     const forget = () => {
-        if (!window.confirm('Забыть адрес в этом браузере? Игры останутся на сервере, открыть их можно будет только по сохранённому адресу.')) return;
+        if (
+            !window.confirm(
+                'Забыть адрес в этом браузере? Игры останутся на сервере, открыть их можно будет только по сохранённому адресу.',
+            )
+        )
+            return;
         setToken(null);
     };
 

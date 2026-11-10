@@ -17,9 +17,13 @@
     --brBase: 10px;
     --brLarge: 16px;
 
-    // Fonts (конкретные шрифты выбираем позже, пока — системные)
-    --fontBase: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --fontMono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    // Fonts — свои, из npm (@fontsource-variable), без запросов к Google: кириллица есть в обоих.
+    --fontBase: 'Rubik Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    --fontMono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    // Стикер: толщина контура и смещение жёсткой тени
+    --stroke: 2.5px;
+    --lift: 4px;
 
     // Motion
     --durTheme: 400ms;

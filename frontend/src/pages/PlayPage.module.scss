@@ -3,20 +3,20 @@
 .page {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 .head {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 6px 14px;
+    gap: 6px 16px;
 }
 
 .back {
     @include focus-ring;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     color: var(--primary-1);
     text-decoration: none;
 
@@ -26,29 +26,46 @@
 }
 
 .title {
-    font-size: 24px;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
 
     @include mobile {
-        font-size: 20px;
+        font-size: 24px;
         flex-basis: 100%;
     }
 }
 
+.version {
+    display: inline-grid;
+    place-items: center;
+    height: 28px;
+    padding: 0 10px;
+    border: var(--stroke) solid var(--ink);
+    border-radius: 999px;
+    background-color: var(--star);
+    color: var(--on-cat);
+    font-family: var(--fontMono);
+    font-size: 13px;
+    font-weight: 800;
+    transform: rotate(3deg);
+}
+
 .muted {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--base-60);
 }
 
 .placeholder {
+    @include sticker;
     display: grid;
     place-items: center;
-    height: calc(100dvh - var(--hTopBar) - 170px);
+    height: calc(100dvh - var(--hTopBar) - 190px);
     min-height: 360px;
-    border: 1px dashed var(--base-20);
-    border-radius: var(--brLarge);
-    color: var(--base-60);
+    border-style: dashed;
+    background-color: var(--cat-soft);
+    color: var(--base-80);
 }
 
 .delete {
@@ -56,8 +73,8 @@
     @include focus-ring;
     padding: 8px 0;
     color: var(--danger);
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 15px;
 
     &:hover {
         text-decoration: underline;

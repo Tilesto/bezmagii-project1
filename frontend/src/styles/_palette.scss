@@ -3,56 +3,86 @@
 // Шкала --base-*: 0 — фон страницы, 100 — основной текст (в тёмной теме шкала зеркальная).
 
 @mixin light {
-    --base-0: #ffffff;
-    --base-5: #f6f6f3;
-    --base-10: #ecece8;
-    --base-20: #dcdcd6;
-    --base-40: #a3a39b;
-    --base-60: #6b6b64;
-    --base-80: #383834;
-    --base-100: #161614;
+    // Каталог «Без магИИ»: цвета маскота. Фон — тёплая бумага, текст и контуры — чернила кота.
+    --base-0: #fbf5ea;
+    --base-5: #f3eada;
+    --base-10: #e9ddc8;
+    --base-20: #d6c7ae;
+    --base-40: #a69679;
+    --base-60: #6f6453;
+    --base-80: #3b342b;
+    --base-100: #1b1b1f;
 
-    --primary-1: #4f46e5;
-    --primary-2: #4338ca;
-    --primary-soft: #ecebfd;
-    --on-primary: #ffffff;
+    // Основной — колпак.
+    --primary-1: #4b3b7a;
+    --primary-2: #3a2d60;
+    --primary-soft: #e6def5;
+    --on-primary: #fff7e0;
 
-    --success: #15803d;
-    --danger: #c62828;
+    --success: #2f7d32;
+    --danger: #d93a3f;
     --warning: #b45309;
 
-    // Верхняя полоса челленджа — инверсная, одинаковая во всех сайтах.
-    --bar-bg: #161614;
-    --bar-fg: #f2f2ee;
-    --bar-muted: #a3a39b;
+    // Стикеры: карточка, контур, жёсткая тень; цвета кота, звезды и знака «запрещено».
+    --card: #fffdf8;
+    --ink: #1b1b1f;
+    --shade: #1b1b1f;
+    --cat: #f2a65a;
+    --cat-2: #f7be80;
+    --cat-soft: #fbe3c4;
+    --on-cat: #1b1b1f;
+    --star: #ffd25a;
+    --nope: #e5484d;
+    --marker: #ffd25a; // маркер под «через день»
+    --desk: #1b1b1f; // «стол» под котом
+    --backdrop: rgb(27 27 31 / 45%); // подложка под всплывающим окном
 
-    --shadow-1: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 16px rgb(0 0 0 / 8%);
+    // Верхняя полоса челленджа — инверсная, одинаковая во всех сайтах.
+    --bar-bg: #1b1b1f;
+    --bar-fg: #fbf5ea;
+    --bar-muted: #a69679;
+
+    --shadow-1: 0 1px 2px rgb(27 27 31 / 8%), 0 4px 16px rgb(27 27 31 / 10%);
 
     color-scheme: light;
 }
 
 @mixin dark {
-    --base-0: #121211;
-    --base-5: #1a1a18;
-    --base-10: #242421;
-    --base-20: #33332f;
-    --base-40: #5c5c56;
-    --base-60: #92928a;
-    --base-80: #cacac3;
-    --base-100: #f2f2ee;
+    // Ночь: фон — тёмный колпак, текст — бумага. Контуры и тени — почти чёрные.
+    --base-0: #16131e;
+    --base-5: #1e1a29;
+    --base-10: #282236;
+    --base-20: #3a3249;
+    --base-40: #6a6079;
+    --base-60: #a39ab2;
+    --base-80: #dcd5e5;
+    --base-100: #fbf5ea;
 
-    --primary-1: #8b85ff;
-    --primary-2: #a7a2ff;
-    --primary-soft: #26244a;
-    --on-primary: #0f0e1c;
+    --primary-1: #c3b4f5;
+    --primary-2: #d8ccff;
+    --primary-soft: #2d2645;
+    --on-primary: #16131e;
 
-    --success: #4ade80;
-    --danger: #f87171;
+    --success: #6ccf70;
+    --danger: #ff6b70;
     --warning: #fbbf24;
 
-    --bar-bg: #000000;
-    --bar-fg: #f2f2ee;
-    --bar-muted: #8f8f88;
+    --card: #231e30;
+    --ink: #07060a;
+    --shade: #07060a;
+    --cat: #f2a65a;
+    --cat-2: #f7be80;
+    --cat-soft: #3b2c24;
+    --on-cat: #1b1b1f;
+    --star: #ffd25a;
+    --nope: #ff6b70;
+    --marker: #5a4796;
+    --desk: #6a6079;
+    --backdrop: rgb(0 0 0 / 60%);
+
+    --bar-bg: #0b0910;
+    --bar-fg: #fbf5ea;
+    --bar-muted: #8f86a0;
 
     --shadow-1: 0 1px 2px rgb(0 0 0 / 40%), 0 4px 16px rgb(0 0 0 / 50%);
 

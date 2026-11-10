@@ -27,6 +27,15 @@ npm run db:generate -w backend   # миграция после правки сх
 `project.json → routes` для sitemap), API — плагином в `backend/src/features/<name>/` +
 строка в `backend/src/features.ts`, таблицы — `backend/src/db/schema/<name>.ts`.
 
+## Дизайн — как у каталога (bezmagii.site)
+
+По умолчанию каждый сайт выглядит как каталог: бумажный фон, чернильные контуры, стикеры с
+жёсткой тенью (`@include sticker`, `@include sticker-button(...)`), шрифты Rubik и JetBrains
+Mono, цвета маскота (`--cat`, `--star`, `--marker`, `--card`, `--ink`). Палитра, шрифты и
+миксины уже в заготовке. «Дефолтный» нейтральный вид (серые карточки, системный шрифт,
+фиолетовые кнопки) не делать. Другой стиль — только если владелец сказал это явно для проекта.
+Образец разметки — `projects/00-catalog/frontend/src/pages/`.
+
 ## Стили — как в cosby
 
 - Файл рядом с компонентом: `Foo.tsx` + `Foo.module.scss`, в модуле `@use 'mixins' as *;`.

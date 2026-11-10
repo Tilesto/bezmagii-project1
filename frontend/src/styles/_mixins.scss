@@ -56,3 +56,42 @@
     color: inherit;
     cursor: pointer;
 }
+
+// Стикер в стиле маскота: чернильный контур + жёсткая тень без размытия.
+@mixin sticker($lift: var(--lift)) {
+    border: var(--stroke) solid var(--ink);
+    border-radius: var(--brLarge);
+    background-color: var(--card);
+    box-shadow: $lift $lift 0 var(--shade);
+}
+
+// Кнопка-стикер: при наведении приподнимается, при нажатии «вдавливается» в тень.
+@mixin sticker-button($bg, $fg) {
+    @include focus-ring;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: var(--stroke) solid var(--ink);
+    border-radius: 999px;
+    background-color: $bg;
+    color: $fg;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 3px 3px 0 var(--shade);
+    transition:
+        transform 120ms ease,
+        box-shadow 120ms ease;
+
+    &:hover {
+        background-color: $bg;
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 var(--shade);
+    }
+
+    &:active {
+        transform: translate(3px, 3px);
+        box-shadow: 0 0 0 var(--shade);
+    }
+}

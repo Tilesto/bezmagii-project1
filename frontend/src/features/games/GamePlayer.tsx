@@ -88,7 +88,7 @@ export function GamePlayer({ token, id, version, html, title, createdAt, updated
                 </button>
                 <button
                     type="button"
-                    className={styles.button}
+                    className={styles.download}
                     onClick={() => downloadGame({ title, version, createdAt, updatedAt, html })}
                     data-audit="game-download"
                 >

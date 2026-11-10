@@ -3,19 +3,20 @@
 .field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     min-width: 0;
 }
 
 .label {
-    font-size: 13px;
-    color: var(--base-60);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--base-80);
 }
 
 .row {
     display: flex;
     align-items: stretch;
-    gap: 8px;
+    gap: 12px;
 
     @include mobile {
         flex-direction: column;
@@ -25,8 +26,8 @@
 .code {
     flex: 1;
     min-width: 0;
-    padding: 10px 12px;
-    border: 1px solid var(--base-20);
+    padding: 11px 14px;
+    border: var(--stroke) solid var(--ink);
     border-radius: var(--brBase);
     background-color: var(--base-5);
     font-family: var(--fontMono);
@@ -48,16 +49,8 @@
 
 .copy {
     @include reset-button;
-    @include focus-ring;
+    @include sticker-button(var(--cat), var(--on-cat));
     flex-shrink: 0;
-    padding: 10px 16px;
-    border-radius: var(--brBase);
-    background-color: var(--primary-1);
-    color: var(--on-primary);
-    font-weight: 600;
-    font-size: 14px;
-
-    &:hover {
-        background-color: var(--primary-2);
-    }
+    padding: 10px 18px;
+    font-size: 15px;
 }
