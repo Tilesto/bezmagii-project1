@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../../core/api/client';
+import { downloadGame } from './download';
 import { authHeaders } from './space';
 import { buildSrcdoc, isGameErrorMessage } from './srcdoc';
 import styles from './GamePlayer.module.scss';
@@ -10,10 +11,12 @@ interface Props {
     version: number;
     html: string;
     title: string;
+    createdAt: number;
+    updatedAt: number;
 }
 
 /** Игра в изолированном iframe. Сообщает серверу, что версия запущена, и пересылает её ошибки. */
-export function GamePlayer({ token, id, version, html, title }: Props) {
+export function GamePlayer({ token, id, version, html, title, createdAt, updatedAt }: Props) {
     const frame = useRef<HTMLIFrameElement>(null);
     const box = useRef<HTMLDivElement>(null);
     const [run, setRun] = useState(0);
@@ -82,6 +85,14 @@ export function GamePlayer({ token, id, version, html, title }: Props) {
                 </button>
                 <button type="button" className={styles.button} onClick={fullscreen} data-audit="game-fullscreen">
                     На весь экран
+                </button>
+                <button
+                    type="button"
+                    className={styles.button}
+                    onClick={() => downloadGame({ title, version, createdAt, updatedAt, html })}
+                    data-audit="game-download"
+                >
+                    Скачать игру (.html)
                 </button>
             </div>
         </div>

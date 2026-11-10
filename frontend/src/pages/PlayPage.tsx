@@ -72,7 +72,15 @@ export function PlayPage() {
             </div>
 
             {game.data ? (
-                <GamePlayer token={token} id={id} version={game.data.version} html={game.data.html} title={game.data.title} />
+                <GamePlayer
+                    token={token}
+                    id={id}
+                    version={game.data.version}
+                    html={game.data.html}
+                    title={game.data.title}
+                    createdAt={game.data.createdAt}
+                    updatedAt={game.data.updatedAt}
+                />
             ) : (
                 <div className={styles.placeholder}>{game.isError ? 'Не получилось загрузить игру' : 'Загружаю…'}</div>
             )}

@@ -3,7 +3,7 @@ import { GameError, LIMITS, type GameSummary } from './games.service.js';
 
 // MCP-сервер (Model Context Protocol), транспорт Streamable HTTP без сессий и без SSE:
 // каждый POST — одно JSON-RPC сообщение, ответ — обычный JSON. Этого хватает клиентам вроде
-// Claude Code: `claude mcp add --transport http project1 https://…/api/mcp/<токен>`.
+// Claude Code: `claude mcp add --scope user --transport http bezmagii_project1_mcp https://…/api/mcp/<токен>`.
 // Токен в адресе, а не в заголовке, — так адрес подходит и клиентам, где заголовок не задать.
 
 const LATEST_PROTOCOL = '2025-06-18';
@@ -166,7 +166,7 @@ export const mcpRoutes: FastifyPluginAsync = async (app) => {
                 return reply({
                     protocolVersion: typeof asked === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(asked) ? asked : LATEST_PROTOCOL,
                     capabilities: { tools: { listChanged: false } },
-                    serverInfo: { name: `bezmagii-${app.project.slug}`, title: app.project.title, version: app.project.version },
+                    serverInfo: { name: `bezmagii_${app.project.slug}_mcp`, title: app.project.title, version: app.project.version },
                     instructions: INSTRUCTIONS,
                 });
             }

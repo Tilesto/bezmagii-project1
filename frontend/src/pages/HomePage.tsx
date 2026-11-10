@@ -8,7 +8,8 @@ import { authHeaders, checkToken, mcpUrl, parseToken, setToken, useCreateSpace }
 import { useGames, useOpenNewGames } from '../features/games/useGames';
 import styles from './HomePage.module.scss';
 
-const SERVER_NAME = 'project1';
+/** Имя MCP-сервера в Claude Code. Инструменты там будут mcp__bezmagii_project1_mcp__*. */
+const SERVER_NAME = 'bezmagii_project1_mcp';
 
 const kb = (bytes: number) => (bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} КБ` : `${(bytes / 1048576).toFixed(1)} МБ`);
 const time = (ts: number) =>
@@ -118,7 +119,7 @@ function Connected({ token }: { token: string }) {
             <h2 className={styles.h2}>Подключение</h2>
             <CopyField
                 label="Команда для Claude Code (выполните в терминале)"
-                value={`claude mcp add --transport http ${SERVER_NAME} ${url}`}
+                value={`claude mcp add --scope user --transport http ${SERVER_NAME} ${url}`}
                 audit="copy-command"
                 secret
             />
