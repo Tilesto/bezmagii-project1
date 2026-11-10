@@ -7,6 +7,8 @@ import { authHeaders } from '../features/games/space';
 import { useGames, useOpenNewGames } from '../features/games/useGames';
 import styles from './PlayPage.module.scss';
 
+const kb = (bytes: number) => (bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} КБ` : `${(bytes / 1048576).toFixed(1)} МБ`);
+
 export function PlayPage() {
     const { id = '' } = useParams();
     const { token, data: list } = useGames();
@@ -17,9 +19,10 @@ export function PlayPage() {
 
     const summary = list?.games.find((g) => g.id === id);
     // Версия из списка (он обновляется раз в 2,5 с): поменялась — тянем новый код, игра перезапускается.
+    // Пока нейросеть дописывает игру частями, код не тянем: показываем прогресс.
     const game = useQuery({
         queryKey: ['game', token, id, summary?.version],
-        enabled: !!token && !!summary,
+        enabled: !!token && !!summary?.complete,
         staleTime: Infinity,
         queryFn: async () => {
             const { data, response } = await api.GET('/api/games/{id}', { params: { path: { id } }, headers: authHeaders(token!) });
@@ -71,7 +74,20 @@ export function PlayPage() {
                 {summary && <span className={styles.version}>v{summary.version}</span>}
             </div>
 
-            {game.data ? (
+            {summary && !summary.complete ? (
+                <div className={styles.writing} role="status">
+                    <span className={styles.writingDots} aria-hidden="true">
+                        <i />
+                        <i />
+                        <i />
+                    </span>
+                    <strong>Нейросеть пишет игру</strong>
+                    <span className={styles.writingMeta}>
+                        частей: {summary.parts} · {kb(summary.size)}
+                    </span>
+                    <span className={styles.muted}>Как только она допишет последнюю часть, игра запустится здесь сама.</span>
+                </div>
+            ) : game.data ? (
                 <GamePlayer
                     token={token}
                     id={id}

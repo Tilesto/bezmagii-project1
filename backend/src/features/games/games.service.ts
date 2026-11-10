@@ -18,7 +18,7 @@ export const TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
 
 export class GameError extends Error {
     constructor(
-        readonly code: 'not_found' | 'limit_games' | 'too_big' | 'bad_input',
+        readonly code: 'not_found' | 'limit_games' | 'too_big' | 'bad_input' | 'edit_failed',
         message: string,
     ) {
         super(message);
@@ -30,8 +30,16 @@ export interface GameSummary {
     title: string;
     size: number;
     version: number;
+    /** false — игру ещё дописывают частями. */
+    complete: boolean;
+    parts: number;
     createdAt: number;
     updatedAt: number;
+}
+
+export interface Edit {
+    old_str: string;
+    new_str: string;
 }
 
 export interface GameFull extends GameSummary {
@@ -47,6 +55,8 @@ const summaryColumns = {
     title: games.title,
     size: games.size,
     version: games.version,
+    complete: games.complete,
+    parts: games.parts,
     createdAt: games.createdAt,
     updatedAt: games.updatedAt,
 };
@@ -97,7 +107,8 @@ export class GamesService {
         return row;
     }
 
-    create(spaceId: string, title: string, html: string): GameSummary {
+    /** complete=false — это первая часть, остальное придёт через append(). */
+    create(spaceId: string, title: string, html: string, complete = true): GameSummary {
         const clean = this.validate(title, html);
         if (this.count(spaceId) >= LIMITS.gamesPerSpace) {
             throw new GameError(
@@ -113,24 +124,76 @@ export class GamesService {
             html,
             size: clean.size,
             version: 1,
+            complete,
+            parts: 1,
             createdAt: ts,
             updatedAt: ts,
         };
         this.db.insert(games).values(row).run();
-        return { id: row.id, title: row.title, size: row.size, version: 1, createdAt: ts, updatedAt: ts };
+        return { id: row.id, title: row.title, size: row.size, version: 1, complete, parts: 1, createdAt: ts, updatedAt: ts };
     }
 
-    update(spaceId: string, id: string, html: string, title?: string): GameSummary {
+    /** Заменить код целиком (новая версия). complete=false — дальше дописывать через append(). */
+    update(spaceId: string, id: string, html: string, title?: string, complete = true): GameSummary {
         const current = this.get(spaceId, id);
         const clean = this.validate(title ?? current.title, html);
+        return this.save(spaceId, current, { title: clean.title, html, size: clean.size, version: current.version + 1, complete, parts: 1 });
+    }
+
+    /** Дописать следующую часть в конец кода. Версия та же: игра ещё не запускалась. */
+    append(spaceId: string, id: string, chunk: string, complete: boolean): GameSummary {
+        const current = this.get(spaceId, id);
+        if (current.complete) {
+            throw new GameError(
+                'bad_input',
+                `Игра ${id} уже дописана. Чтобы дописать заново: update_game с complete=false, потом append_game. Для правок есть edit_game.`,
+            );
+        }
+        if (!chunk) throw new GameError('bad_input', 'Пустая часть');
+        const html = current.html + chunk;
+        const size = this.checkSize(html);
+        return this.save(spaceId, current, { title: current.title, html, size, version: current.version, complete, parts: current.parts + 1 });
+    }
+
+    /**
+     * Точечные правки: каждый old_str должен встречаться в коде ровно один раз. Применяются по
+     * порядку, все или ни одной. Новая версия — вкладка перезапустит игру.
+     */
+    edit(spaceId: string, id: string, edits: Edit[]): GameSummary {
+        const current = this.get(spaceId, id);
+        if (!edits.length) throw new GameError('bad_input', 'Нет правок');
+        let html = current.html;
+        edits.forEach((e, i) => {
+            const n = i + 1;
+            if (typeof e?.old_str !== 'string' || typeof e?.new_str !== 'string' || !e.old_str) {
+                throw new GameError('bad_input', `Правка ${n}: нужны строки old_str (не пустая) и new_str`);
+            }
+            const first = html.indexOf(e.old_str);
+            if (first === -1) {
+                throw new GameError('edit_failed', `Правка ${n}: old_str не найден в коде (версия ${current.version}). Ничего не изменено. Сверь текст через get_game.`);
+            }
+            if (html.indexOf(e.old_str, first + 1) !== -1) {
+                throw new GameError('edit_failed', `Правка ${n}: old_str встречается больше одного раза. Добавь соседние строки, чтобы фрагмент был уникальным. Ничего не изменено.`);
+            }
+            html = html.slice(0, first) + e.new_str + html.slice(first + e.old_str.length);
+        });
+        const size = this.checkSize(html);
+        return this.save(spaceId, current, { title: current.title, html, size, version: current.version + 1, complete: current.complete, parts: current.parts });
+    }
+
+    private save(
+        spaceId: string,
+        current: GameFull,
+        next: { title: string; html: string; size: number; version: number; complete: boolean; parts: number },
+    ): GameSummary {
         const ts = this.now();
-        const version = current.version + 1;
         this.db
             .update(games)
-            .set({ title: clean.title, html, size: clean.size, version, updatedAt: ts })
-            .where(and(eq(games.spaceId, spaceId), eq(games.id, id)))
+            .set({ ...next, updatedAt: ts })
+            .where(and(eq(games.spaceId, spaceId), eq(games.id, current.id)))
             .run();
-        return { id, title: clean.title, size: clean.size, version, createdAt: current.createdAt, updatedAt: ts };
+        const { html: _html, ...rest } = next;
+        return { id: current.id, createdAt: current.createdAt, updatedAt: ts, ...rest };
     }
 
     delete(spaceId: string, id: string): void {
@@ -182,10 +245,14 @@ export class GamesService {
         const t = title.trim().replace(/\s+/g, ' ').slice(0, LIMITS.titleChars);
         if (!t) throw new GameError('bad_input', 'Нужно название игры');
         if (!html.trim()) throw new GameError('bad_input', 'Пустой html');
+        return { title: t, size: this.checkSize(html) };
+    }
+
+    private checkSize(html: string): number {
         const size = Buffer.byteLength(html, 'utf8');
         if (size > LIMITS.gameBytes) {
-            throw new GameError('too_big', `Игра весит ${(size / 1048576).toFixed(1)} МБ, предел 10 МБ`);
+            throw new GameError('too_big', `Игра весит ${(size / 1048576).toFixed(1)} МБ, предел 10 МБ. Ничего не изменено.`);
         }
-        return { title: t, size };
+        return size;
     }
 }

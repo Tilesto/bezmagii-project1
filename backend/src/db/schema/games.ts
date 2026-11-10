@@ -23,6 +23,10 @@ export const games = sqliteTable(
         html: text('html').notNull(),
         /** Размер html в байтах (UTF-8). */
         size: integer('size').notNull(),
+        /** false — нейросеть ещё дописывает игру частями (append_game), вкладка показывает прогресс. */
+        complete: integer('complete', { mode: 'boolean' }).notNull().default(true),
+        /** Сколько частей прислано для текущей версии. */
+        parts: integer('parts').notNull().default(1),
         /** Растёт при каждой правке: вкладка перезапускает игру, ошибки старых версий не путаются. */
         version: integer('version').notNull().default(1),
         createdAt: integer('created_at').notNull(),

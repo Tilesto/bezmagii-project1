@@ -225,6 +225,8 @@
                           "title",
                           "size",
                           "version",
+                          "complete",
+                          "parts",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -239,6 +241,12 @@
                             "type": "integer"
                           },
                           "version": {
+                            "type": "integer"
+                          },
+                          "complete": {
+                            "type": "boolean"
+                          },
+                          "parts": {
                             "type": "integer"
                           },
                           "createdAt": {
@@ -302,6 +310,8 @@
                     "title",
                     "size",
                     "version",
+                    "complete",
+                    "parts",
                     "createdAt",
                     "updatedAt",
                     "html"
@@ -317,6 +327,12 @@
                       "type": "integer"
                     },
                     "version": {
+                      "type": "integer"
+                    },
+                    "complete": {
+                      "type": "boolean"
+                    },
+                    "parts": {
                       "type": "integer"
                     },
                     "createdAt": {

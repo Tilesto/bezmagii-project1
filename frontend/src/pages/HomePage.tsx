@@ -64,7 +64,10 @@ export function HomePage() {
                             {data.games.map((g) => (
                                 <li key={g.id}>
                                     <Link to={`/play/${g.id}`} className={styles.game} data-audit="open-game">
-                                        <span className={styles.gameTitle}>{g.title}</span>
+                                        <span className={styles.gameTitle}>
+                                            {g.title}
+                                            {!g.complete && <span className={styles.writing}>пишется</span>}
+                                        </span>
                                         <span className={styles.gameMeta}>
                                             версия {g.version} · {kb(g.size)} · {time(g.updatedAt)}
                                         </span>

@@ -14,6 +14,8 @@ const summaryFields = {
     title: Type.String(),
     size: Type.Integer(),
     version: Type.Integer(),
+    complete: Type.Boolean(),
+    parts: Type.Integer(),
     createdAt: Type.Integer(),
     updatedAt: Type.Integer(),
 };

@@ -63,11 +63,11 @@ describe('игры и MCP', () => {
         assert.equal(get.statusCode, 405);
     });
 
-    it('tools/list отдаёт 6 инструментов', async () => {
+    it('tools/list отдаёт 8 инструментов', async () => {
         const { body } = await rpc('tools/list');
         assert.deepEqual(
             body.result.tools.map((t: { name: string }) => t.name).sort(),
-            ['create_game', 'delete_game', 'get_errors', 'get_game', 'list_games', 'update_game'],
+            ['append_game', 'create_game', 'delete_game', 'edit_game', 'get_errors', 'get_game', 'list_games', 'update_game'],
         );
     });
 
@@ -85,6 +85,48 @@ describe('игры и MCP', () => {
         const full = await app.inject({ method: 'GET', url: `/api/games/${id}`, headers: auth });
         assert.equal(full.json().version, 2);
         assert.match(full.json().html, /<script>2<\/script>/);
+    });
+
+    it('большая игра частями: пока не дописана, вкладка видит complete=false; append после complete — ошибка', async () => {
+        const first = await call('create_game', { title: 'Слешер', html: '<!doctype html><html><body><script>\nlet a = 1;\n', complete: false });
+        assert.match(first.content[0]?.text ?? '', /Начата игра/);
+        const id = /id ([A-Za-z0-9_-]{8})/.exec(first.content[0]!.text)![1]!;
+
+        const list1 = (await app.inject({ method: 'GET', url: '/api/games', headers: auth })).json();
+        const g1 = list1.games.find((g: { id: string }) => g.id === id);
+        assert.equal(g1.complete, false);
+        assert.equal(g1.parts, 1);
+
+        const mid = await call('append_game', { id, html: 'let b = 2;\n', complete: false });
+        assert.match(mid.content[0]?.text ?? '', /Часть 2 сохранена/);
+        const done = await call('append_game', { id, html: '</script></body></html>', complete: true });
+        assert.match(done.content[0]?.text ?? '', /дописана \(частей 3\)/);
+
+        const full = (await app.inject({ method: 'GET', url: `/api/games/${id}`, headers: auth })).json();
+        assert.equal(full.complete, true);
+        assert.equal(full.version, 1);
+        assert.equal(full.html, '<!doctype html><html><body><script>\nlet a = 1;\nlet b = 2;\n</script></body></html>');
+
+        const late = await call('append_game', { id, html: 'x', complete: true });
+        assert.ok(late.isError);
+
+        // edit_game: точечная правка, новая версия; неуникальный и ненайденный фрагмент — ничего не меняют
+        const ok = await call('edit_game', { id, edits: [{ old_str: 'let b = 2;', new_str: 'let b = 3;' }] });
+        assert.ok(!ok.isError, ok.content[0]?.text ?? '');
+        assert.match(ok.content[0]?.text ?? '', /версия 2/);
+        const dup = await call('edit_game', { id, edits: [{ old_str: 'let', new_str: 'var' }] });
+        assert.ok(dup.isError);
+        assert.match(dup.content[0]?.text ?? '', /больше одного раза/);
+        const miss = await call('edit_game', { id, edits: [{ old_str: 'let b = 3;', new_str: 'x' }, { old_str: 'нет такого', new_str: 'y' }] });
+        assert.ok(miss.isError);
+        const after = (await app.inject({ method: 'GET', url: `/api/games/${id}`, headers: auth })).json();
+        assert.match(after.html, /let b = 3;/);
+        assert.equal(after.version, 2);
+
+        // get_game по строкам
+        const part = await call('get_game', { id, from_line: 2, to_line: 2 });
+        assert.match(part.content[0]?.text ?? '', /Строки 2–2 из 4/);
+        assert.match(part.content[0]?.text ?? '', /let a = 1;$/);
     });
 
     it('get_errors: не запускалась → просит открыть; ошибки из вкладки видны нейросети', async () => {

@@ -236,6 +236,8 @@ export interface paths {
                                 title: string;
                                 size: number;
                                 version: number;
+                                complete: boolean;
+                                parts: number;
                                 createdAt: number;
                                 updatedAt: number;
                             }[];
@@ -286,6 +288,8 @@ export interface paths {
                             title: string;
                             size: number;
                             version: number;
+                            complete: boolean;
+                            parts: number;
                             createdAt: number;
                             updatedAt: number;
                             html: string;

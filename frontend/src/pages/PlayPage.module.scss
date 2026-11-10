@@ -80,3 +80,70 @@
         text-decoration: underline;
     }
 }
+
+// Нейросеть дописывает игру частями: стикер с прыгающими точками и счётчиком.
+.writing {
+    @include sticker;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: calc(100dvh - var(--hTopBar) - 190px);
+    min-height: 360px;
+    padding: 24px;
+    background-color: var(--cat-soft);
+    text-align: center;
+
+    strong {
+        font-size: 24px;
+        font-weight: 800;
+    }
+}
+
+.writing-meta {
+    font-family: var(--fontMono);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.writing-dots {
+    display: flex;
+    gap: 10px;
+
+    i {
+        width: 16px;
+        height: 16px;
+        border: var(--stroke) solid var(--ink);
+        border-radius: 50%;
+        background-color: var(--star);
+        animation: hop 900ms ease-in-out infinite;
+
+        &:nth-child(2) {
+            animation-delay: 150ms;
+            background-color: var(--cat);
+        }
+
+        &:nth-child(3) {
+            animation-delay: 300ms;
+        }
+    }
+
+    @include reduced-motion {
+        i {
+            animation: none;
+        }
+    }
+}
+
+@keyframes hop {
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-10px);
+    }
+}
