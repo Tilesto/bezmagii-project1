@@ -41,7 +41,9 @@ export function useToken(): string | null {
     );
 }
 
-export const mcpUrl = (token: string) => `${siteUrl}/api/mcp/${token}`;
+// Локально (npm run dev) адрес — этот же localhost: Vite проксирует /api на бэк.
+const base = import.meta.env.DEV ? window.location.origin : siteUrl;
+export const mcpUrl = (token: string) => `${base}/api/mcp/${token}`;
 export const authHeaders = (token: string) => ({ Authorization: `Bearer ${token}` });
 
 /** Токен из вставленного адреса MCP или из самого токена. */
