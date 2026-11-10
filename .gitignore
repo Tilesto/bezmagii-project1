@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+backend/data/
+# генерируются из project.json перед dev и build (frontend/scripts/og.mjs)
+frontend/public/og.png
+frontend/public/favicon.svg
+frontend/public/apple-touch-icon.png
+frontend/public/icon-192.png
+frontend/public/icon-512.png
+.DS_Store

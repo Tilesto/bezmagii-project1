@@ -1,0 +1,114 @@
+@use 'mixins' as *;
+
+.footer {
+    border-top: 1px solid var(--base-10);
+    background-color: var(--base-5);
+    color: var(--base-60);
+    font-size: 13px;
+}
+
+.inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: var(--wContent);
+    margin: 0 auto;
+    padding: 20px max(var(--gutter), env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom))
+        max(var(--gutter), env(safe-area-inset-left));
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+}
+
+.counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    color: var(--base-80);
+    font-variant-numeric: tabular-nums;
+}
+
+.counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.counter-icon {
+    width: 15px;
+    height: 15px;
+    color: var(--base-60);
+}
+
+.socials {
+    display: flex;
+    gap: 4px;
+}
+
+.social {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--brSmall);
+    color: var(--base-60);
+
+    &:hover {
+        color: var(--base-100);
+        background-color: var(--base-10);
+    }
+}
+
+.social-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.honest {
+    color: var(--base-80);
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+
+    a {
+        color: var(--base-60);
+
+        &:hover {
+            color: var(--base-100);
+        }
+    }
+}
+
+.version {
+    @include reset-button;
+    @include focus-ring;
+    padding: 1px 6px;
+    border: 1px solid var(--base-20);
+    border-radius: var(--brSmall);
+    color: var(--base-60);
+    font-family: var(--fontMono);
+    font-size: 12px;
+
+    &:hover {
+        color: var(--base-100);
+        border-color: var(--base-40);
+    }
+}
+
+.contact {
+    font-size: 12px;
+    color: var(--base-60);
+
+    a {
+        color: inherit;
+    }
+}

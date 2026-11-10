@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>%TITLE%</title>
+    <meta name="description" content="%DESCRIPTION%" />
+    <link rel="canonical" href="%URL%" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="Без магИИ" />
+    <meta property="og:title" content="%TITLE%" />
+    <meta property="og:description" content="%DESCRIPTION%" />
+    <meta property="og:url" content="%URL%" />
+    <meta property="og:image" content="%OG_IMAGE%" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="%OG_IMAGE%" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Тема до отрисовки: без вспышки не той темы. Выбор пользователя или системная. -->
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('bm.theme'); } catch (e) {}
+        var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', dark ? '#121211' : '#ffffff');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Для работы сайта нужен JavaScript.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

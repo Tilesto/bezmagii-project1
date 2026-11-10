@@ -1,0 +1,58 @@
+// Брейкпоинты — как в cosby (max-width, те же имена), чтобы рука не путалась между проектами.
+// Сайты блога смотрят в основном с телефона: верстаем и сразу проверяем на ширине `mobile`.
+
+@mixin medium-screen {
+    @media (max-width: 1650px) {
+        @content;
+    }
+}
+
+@mixin small-screen {
+    @media (max-width: 1366px) {
+        @content;
+    }
+}
+
+@mixin laptop {
+    @media (max-width: 1024px) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @media (max-width: 480px) {
+        @content;
+    }
+}
+
+@mixin reduced-motion {
+    @media (prefers-reduced-motion: reduce) {
+        @content;
+    }
+}
+
+// Видимый фокус с клавиатуры, одинаковый во всех сайтах.
+@mixin focus-ring {
+    &:focus-visible {
+        outline: 2px solid var(--primary-1);
+        outline-offset: 2px;
+    }
+}
+
+// Кнопка без оформления браузера.
+@mixin reset-button {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}

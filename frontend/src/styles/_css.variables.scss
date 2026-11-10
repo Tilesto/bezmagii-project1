@@ -1,0 +1,26 @@
+// Размеры, радиусы, z-index. Цветов здесь нет — они в _palette.scss.
+
+:root {
+    // Z-indexes
+    --zTopBar: 900;
+    --zCookieBanner: 950;
+    --zToasts: 990;
+    --zDialog: 1000;
+
+    // Sizes
+    --hTopBar: 34px;
+    --wContent: 960px;
+    --gutter: 16px;
+
+    // Radiuses
+    --brSmall: 6px;
+    --brBase: 10px;
+    --brLarge: 16px;
+
+    // Fonts (конкретные шрифты выбираем позже, пока — системные)
+    --fontBase: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --fontMono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    // Motion
+    --durTheme: 400ms;
+}

@@ -1,0 +1,21 @@
+@use 'mixins' as *;
+
+.layout {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    // minmax(0, …): широкий контент (таблица, код) не раздвигает страницу, а скроллится внутри себя.
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 100dvh;
+}
+
+.main {
+    width: 100%;
+    max-width: var(--wContent);
+    margin: 0 auto;
+    padding: 24px max(var(--gutter), env(safe-area-inset-right)) 48px max(var(--gutter), env(safe-area-inset-left));
+
+    @include mobile {
+        padding-top: 16px;
+        padding-bottom: 32px;
+    }
+}

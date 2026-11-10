@@ -1,0 +1,79 @@
+// Цвета — только здесь и только переменными. Новый вид сайта = новая палитра.
+// Две темы: светлая и тёмная. data-theme на <html> ставит inline-скрипт в index.html до отрисовки.
+// Шкала --base-*: 0 — фон страницы, 100 — основной текст (в тёмной теме шкала зеркальная).
+
+@mixin light {
+    --base-0: #ffffff;
+    --base-5: #f6f6f3;
+    --base-10: #ecece8;
+    --base-20: #dcdcd6;
+    --base-40: #a3a39b;
+    --base-60: #6b6b64;
+    --base-80: #383834;
+    --base-100: #161614;
+
+    --primary-1: #4f46e5;
+    --primary-2: #4338ca;
+    --primary-soft: #ecebfd;
+    --on-primary: #ffffff;
+
+    --success: #15803d;
+    --danger: #c62828;
+    --warning: #b45309;
+
+    // Верхняя полоса челленджа — инверсная, одинаковая во всех сайтах.
+    --bar-bg: #161614;
+    --bar-fg: #f2f2ee;
+    --bar-muted: #a3a39b;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 16px rgb(0 0 0 / 8%);
+
+    color-scheme: light;
+}
+
+@mixin dark {
+    --base-0: #121211;
+    --base-5: #1a1a18;
+    --base-10: #242421;
+    --base-20: #33332f;
+    --base-40: #5c5c56;
+    --base-60: #92928a;
+    --base-80: #cacac3;
+    --base-100: #f2f2ee;
+
+    --primary-1: #8b85ff;
+    --primary-2: #a7a2ff;
+    --primary-soft: #26244a;
+    --on-primary: #0f0e1c;
+
+    --success: #4ade80;
+    --danger: #f87171;
+    --warning: #fbbf24;
+
+    --bar-bg: #000000;
+    --bar-fg: #f2f2ee;
+    --bar-muted: #8f8f88;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 40%), 0 4px 16px rgb(0 0 0 / 50%);
+
+    color-scheme: dark;
+}
+
+:root {
+    @include light;
+}
+
+// Без JS (или до скрипта) — системная тема.
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        @include dark;
+    }
+}
+
+:root[data-theme='light'] {
+    @include light;
+}
+
+:root[data-theme='dark'] {
+    @include dark;
+}

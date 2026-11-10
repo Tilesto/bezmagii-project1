@@ -1,0 +1,16 @@
+{
+  "slug": "project1",
+  "number": 1,
+  "title": "Игры через MCP",
+  "description": "Подключи свою нейросеть по MCP, и она сделает тебе браузерную игру",
+  "version": "1.0.0",
+  "routes": [
+    "/"
+  ],
+  "honest": {
+    "totalMin": null,
+    "activeMin": null,
+    "reviewed": false
+  },
+  "features": []
+}

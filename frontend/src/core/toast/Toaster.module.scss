@@ -1,0 +1,84 @@
+@use 'mixins' as *;
+
+.toaster {
+    position: fixed;
+    right: max(var(--gutter), env(safe-area-inset-right));
+    bottom: max(var(--gutter), env(safe-area-inset-bottom));
+    z-index: var(--zToasts);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(360px, calc(100vw - 2 * var(--gutter)));
+    pointer-events: none;
+
+    @include mobile {
+        right: var(--gutter);
+        left: var(--gutter);
+        width: auto;
+    }
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 10px 10px 14px;
+    border: 1px solid var(--base-20);
+    border-radius: var(--brBase);
+    background-color: var(--base-5);
+    box-shadow: var(--shadow-1);
+    color: var(--base-100);
+    font-size: 14px;
+    pointer-events: auto;
+    animation: toast-in 200ms ease-out;
+
+    &.success .icon {
+        color: var(--success);
+    }
+
+    &.error .icon {
+        color: var(--danger);
+    }
+
+    &.info .icon {
+        color: var(--primary-1);
+    }
+}
+
+.icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+}
+
+.text {
+    flex: 1;
+}
+
+.close {
+    @include reset-button;
+    @include focus-ring;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--brSmall);
+    color: var(--base-60);
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    &:hover {
+        background-color: var(--base-10);
+    }
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}

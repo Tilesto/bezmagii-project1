@@ -1,0 +1,161 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Заготовка",
+    "version": "0.1.0"
+  },
+  "components": {
+    "schemas": {}
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "core"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "slug",
+                    "version"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events": {
+      "post": {
+        "summary": "Пачка событий аудита с фронта",
+        "tags": [
+          "stats"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "v",
+                  "s",
+                  "e"
+                ],
+                "properties": {
+                  "v": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 64,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "s": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 64,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "vis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "r": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "e": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "t"
+                      ],
+                      "properties": {
+                        "t": {
+                          "type": "string",
+                          "pattern": "^[a-z_]{1,32}$",
+                          "description": "Тип события: page_view, click, js_error, …"
+                        },
+                        "n": {
+                          "type": "string",
+                          "maxLength": 300
+                        },
+                        "p": {
+                          "type": "string",
+                          "maxLength": 300
+                        },
+                        "ts": {
+                          "type": "number"
+                        },
+                        "d": {
+                          "type": "object",
+                          "additionalProperties": {}
+                        }
+                      }
+                    },
+                    "maxItems": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "summary": "Счётчики для подвала",
+        "tags": [
+          "stats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "visits",
+                    "users"
+                  ],
+                  "properties": {
+                    "visits": {
+                      "type": "integer"
+                    },
+                    "users": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

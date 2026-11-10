@@ -1,0 +1,44 @@
+@use 'mixins' as *;
+
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.title {
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+
+    @include mobile {
+        font-size: 30px;
+    }
+}
+
+.lead {
+    max-width: 560px;
+    font-size: 18px;
+    color: var(--base-60);
+}
+
+.demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.secondary {
+    @include reset-button;
+    @include focus-ring;
+    padding: 10px 16px;
+    border: 1px solid var(--base-20);
+    border-radius: var(--brBase);
+    background-color: var(--base-5);
+    font-weight: 600;
+
+    &:hover {
+        border-color: var(--base-40);
+    }
+}

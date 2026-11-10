@@ -1,0 +1,23 @@
+@use 'mixins' as *;
+
+.button {
+    @include reset-button;
+    @include focus-ring;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--brBase);
+    background-color: var(--primary-1);
+    color: var(--on-primary);
+    font-weight: 600;
+
+    &:hover {
+        background-color: var(--primary-2);
+    }
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+}
