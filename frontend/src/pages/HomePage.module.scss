@@ -3,7 +3,17 @@
 .page {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 32px;
+
+    @include mobile {
+        gap: 24px;
+    }
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .title {
@@ -17,16 +27,122 @@
 }
 
 .lead {
-    max-width: 560px;
+    max-width: 600px;
     font-size: 18px;
     color: var(--base-60);
 }
 
-.demo {
+.section {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 8px;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+}
+
+.count {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--base-60);
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 22px;
+    font-size: 16px;
+}
+
+.hint {
+    font-size: 15px;
+
+    q {
+        font-style: italic;
+    }
+}
+
+.muted {
+    font-size: 14px;
+    color: var(--base-60);
+}
+
+.empty {
+    padding: 20px;
+    border: 1px dashed var(--base-20);
+    border-radius: var(--brLarge);
+    color: var(--base-60);
+}
+
+.games {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+}
+
+.game {
+    @include focus-ring;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid var(--base-20);
+    border-radius: var(--brLarge);
+    background-color: var(--base-5);
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+        border-color: var(--primary-1);
+    }
+}
+
+.game-title {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.game-meta {
+    font-size: 13px;
+    color: var(--base-60);
+}
+
+.notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 680px;
+    padding-left: 20px;
+    color: var(--base-80);
+}
+
+.primary {
+    @include reset-button;
+    @include focus-ring;
+    align-self: flex-start;
+    padding: 12px 22px;
+    border-radius: var(--brBase);
+    background-color: var(--primary-1);
+    color: var(--on-primary);
+    font-weight: 700;
+    font-size: 16px;
+
+    &:hover {
+        background-color: var(--primary-2);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: default;
+    }
 }
 
 .secondary {
@@ -37,8 +153,64 @@
     border-radius: var(--brBase);
     background-color: var(--base-5);
     font-weight: 600;
+    font-size: 14px;
 
     &:hover {
         border-color: var(--base-40);
+    }
+}
+
+.restore {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.restore-row {
+    display: flex;
+    gap: 8px;
+
+    @include mobile {
+        flex-direction: column;
+    }
+}
+
+.input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--base-20);
+    border-radius: var(--brBase);
+    background-color: var(--base-0);
+    color: inherit;
+    font: inherit;
+    font-size: 14px;
+
+    &:focus-visible {
+        outline: 2px solid var(--primary-1);
+        outline-offset: 1px;
+    }
+}
+
+.danger {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--base-10);
+}
+
+.danger-button {
+    @include reset-button;
+    @include focus-ring;
+    padding: 10px 16px;
+    border-radius: var(--brBase);
+    color: var(--danger);
+    font-weight: 600;
+    font-size: 14px;
+
+    &:hover {
+        background-color: var(--base-5);
     }
 }

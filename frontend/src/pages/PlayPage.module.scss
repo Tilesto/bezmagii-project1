@@ -1,0 +1,65 @@
+@use 'mixins' as *;
+
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 14px;
+}
+
+.back {
+    @include focus-ring;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-1);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.title {
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+
+    @include mobile {
+        font-size: 20px;
+        flex-basis: 100%;
+    }
+}
+
+.muted {
+    font-size: 14px;
+    color: var(--base-60);
+}
+
+.placeholder {
+    display: grid;
+    place-items: center;
+    height: calc(100dvh - var(--hTopBar) - 170px);
+    min-height: 360px;
+    border: 1px dashed var(--base-20);
+    border-radius: var(--brLarge);
+    color: var(--base-60);
+}
+
+.delete {
+    @include reset-button;
+    @include focus-ring;
+    padding: 8px 0;
+    color: var(--danger);
+    font-weight: 600;
+    font-size: 14px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
