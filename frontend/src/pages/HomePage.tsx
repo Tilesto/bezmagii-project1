@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { api } from '../core/api/client';
 import { project } from '../core/project';
 import { useToast } from '../core/toast/toast';
+import { EXAMPLES } from '../features/examples/examples';
 import { CopyField } from '../features/games/CopyField';
 import { authHeaders, checkToken, mcpUrl, parseToken, setToken, useCreateSpace } from '../features/games/space';
 import { useGames, useOpenNewGames } from '../features/games/useGames';
@@ -81,6 +82,8 @@ export function HomePage() {
                 </section>
             )}
 
+            <Examples />
+
             <section className={styles.section}>
                 <h2 className={styles.h2}>Что важно знать</h2>
                 <ul className={styles.notes}>
@@ -100,6 +103,32 @@ export function HomePage() {
 
             {token && <Danger token={token} />}
         </article>
+    );
+}
+
+/** Игры автора сайта из ролика: открыты всем, у каждой промпт. */
+function Examples() {
+    return (
+        <section className={styles.section} id="examples">
+            <h2 className={styles.h2}>Примеры игр</h2>
+            <p className={styles.muted}>
+                Эти игры сделаны для ролика про этот сайт. Их видят все. Код каждой написала нейросеть, промпт есть на странице
+                игры.
+            </p>
+            <ul className={styles.examples}>
+                {EXAMPLES.map((e) => (
+                    <li key={e.slug}>
+                        <Link to={`/examples/${e.slug}`} className={styles.example} data-audit={`open-example-${e.slug}`}>
+                            <img className={styles.shot} src={e.image} alt="" loading="lazy" width={720} height={405} />
+                            <span className={styles.exampleTitle}>{e.title}</span>
+                            <span className={styles.gameMeta}>
+                                ⏱ {e.time} · идея: {e.idea}
+                            </span>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </section>
     );
 }
 

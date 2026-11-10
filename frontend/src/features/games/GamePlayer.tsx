@@ -6,8 +6,9 @@ import { buildSrcdoc, isGameErrorMessage } from './srcdoc';
 import styles from './GamePlayer.module.scss';
 
 interface Props {
-    token: string;
-    id: string;
+    /** Пространство и id игры: вкладка сообщает серверу о запуске и ошибках. Без них (пример игры) — просто играть. */
+    token?: string;
+    id?: string;
     version: number;
     html: string;
     title: string;
@@ -23,6 +24,7 @@ export function GamePlayer({ token, id, version, html, title, createdAt, updated
     const srcdoc = useMemo(() => buildSrcdoc(html), [html]);
 
     useEffect(() => {
+        if (!token || !id) return;
         const queue: string[] = [];
         const seen = new Set<string>();
         let timer: number | undefined;

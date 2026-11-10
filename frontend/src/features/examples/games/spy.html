@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Кто шпион?</title>
+<style>
+:root{
+  --bg:#0f0c09; --folder:#2a2118; --tabc:#3a2e20; --paper:#ece2cb; --ink:#1d1a16;
+  --text:#efe6d2; --muted:#a8997e; --red:#c8322a; --accent:#d9a441; --line:#4a3c2b; --field:#1b1611;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+  font-family:"Courier New",Courier,monospace;overflow:hidden;overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+#app{position:fixed;inset:0;display:flex;justify-content:center}
+.folder{position:relative;width:100%;max-width:560px;height:100%;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:flex-end;padding:10px 12px 0;padding-top:max(10px,env(safe-area-inset-top))}
+.tab{background:var(--tabc);padding:9px 18px 7px;border-radius:12px 12px 0 0;font-size:15px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.topbtns{display:flex;padding-bottom:6px}
+.ico{font:inherit;font-size:16px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-left:6px;min-height:38px;cursor:pointer}
+.ico.armed{color:#fff;background:var(--red);border-color:var(--red)}
+.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 24px;
+  padding-bottom:max(24px,env(safe-area-inset-bottom));
+  background-color:var(--folder);border-top:4px solid var(--tabc);
+  background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.012) 0 10px,transparent 10px 20px);
+  box-shadow:inset 0 0 60px rgba(0,0,0,.45)}
+h1{font-size:clamp(52px,16vw,84px);line-height:.95;margin:20px 0 12px;text-transform:uppercase;letter-spacing:-.02em}
+h2{font-size:30px;margin:6px 0 12px;text-transform:uppercase}
+h3{font-size:20px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.lead{font-size:19px;line-height:1.4;color:#d8ccb2}
+.small{font-size:14px;color:var(--muted)}
+.center{text-align:center}
+[hidden]{display:none!important}
+.title{display:flex;flex-direction:column;min-height:100%;justify-content:center}
+.title .spy{width:120px;height:80px;margin:0 0 4px}
+.credit{margin-top:auto;padding-top:22px;font-size:13px;color:var(--muted);text-align:center}
+.stamp{display:inline-block;border:4px solid currentColor;color:var(--red);font-family:Impact,"Arial Black",sans-serif;
+  font-weight:900;letter-spacing:.12em;padding:4px 14px;border-radius:6px;transform:rotate(-6deg);font-size:22px;
+  line-height:1.05;text-align:center;opacity:.92;align-self:flex-start}
+.stamp.big{font-size:40px;padding:6px 18px;border-width:5px}
+.stamp.green{color:#6fbf68}
+.btn{display:block;width:100%;min-height:58px;font:inherit;font-size:21px;font-weight:700;line-height:1.15;
+  border-radius:12px;border:2px solid var(--accent);background:var(--accent);color:#1a140c;margin:10px 0;
+  padding:10px 14px;cursor:pointer;touch-action:manipulation}
+.btn small{display:block;font-size:14px;font-weight:400;opacity:.85;margin-top:4px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.ghostred{background:transparent;color:#ff7b70;border-color:var(--red);font-size:19px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:active:not(:disabled){transform:translateY(2px)}
+.row2{display:flex;gap:10px}.row2 .btn{flex:1}
+.lbl{margin:18px 0 8px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{width:58px;height:58px;font:inherit;font-size:32px;font-weight:700;border-radius:12px;border:2px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;touch-action:manipulation}
+.stepper button:disabled{opacity:.3}
+.stepper span{font-size:42px;font-weight:900;min-width:60px;text-align:center}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input.name{width:100%;font:inherit;font-size:19px;padding:11px 10px;background:var(--field);color:var(--text);border:1px solid var(--line);border-radius:8px}
+input.name:focus{outline:2px solid var(--accent);border-color:transparent}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;min-height:52px;font:inherit;font-size:19px;font-weight:700;background:var(--field);color:var(--text);border:2px solid var(--line);border-radius:10px;cursor:pointer;touch-action:manipulation}
+.seg button.on{border-color:var(--accent);background:#3a2d17;color:var(--accent)}
+.seg button:disabled{opacity:.3}
+.seg.col{flex-direction:column}.seg.col button{text-align:left;padding:0 14px}
+.seg small{font-weight:400;color:var(--muted)}
+.paper{background-color:var(--paper);color:var(--ink);padding:16px 18px;border-radius:3px;box-shadow:0 8px 0 rgba(0,0,0,.35);
+  background-image:linear-gradient(transparent calc(100% - 1px),rgba(0,0,0,.07) 0);background-size:100% 28px;position:relative}
+.paper p{margin:0 0 12px;font-size:17px;line-height:1.45}
+.paper p:last-child{margin-bottom:0}
+.paper.rules{font-size:17px;line-height:1.45;margin-top:18px}
+.pass{text-align:center;font-size:20px;margin:6px 0 12px}
+.who{font-size:clamp(34px,10vw,52px);font-weight:900;color:var(--accent);word-break:break-word;line-height:1.1;margin-top:4px;text-align:center}
+.cardbox{min-height:230px;display:flex;align-items:stretch;justify-content:center}
+.closed{flex:1;border:2px solid var(--line);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:repeating-linear-gradient(45deg,#1d1812 0 12px,#221b14 12px 24px)}
+.closed .stamp{align-self:center}
+.card{flex:1;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.card .k{font-size:15px;text-transform:uppercase;letter-spacing:.15em;color:#6b5d48}
+.card .v{font-size:clamp(28px,8.5vw,40px);font-weight:900;margin:2px 0 14px;line-height:1.1}
+.card .v:last-child{margin-bottom:0}
+.card .role{color:#7a1d17}
+.card.spy .stamp{align-self:center;margin:6px 0 16px}
+.card.spy p{font-size:18px}
+.hold{margin-top:14px;height:150px;border-radius:20px;border:3px dashed var(--accent);display:flex;align-items:center;justify-content:center;
+  text-align:center;font-size:20px;font-weight:700;color:var(--accent);background:rgba(217,164,65,.08);
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer}
+.hold.down{background:var(--accent);color:#1a140c;border-style:solid}
+.first{text-align:center;font-size:19px}
+.timer{font-size:clamp(80px,26vw,150px);font-weight:900;text-align:center;font-variant-numeric:tabular-nums;line-height:1;margin:14px 0}
+.timer.warn{color:var(--red);animation:pulse 1s steps(2) infinite}
+@keyframes pulse{50%{opacity:.55}}
+.timeup{display:block;width:max-content;margin:6px auto 10px}
+details.locs{margin-top:16px;font-size:16px;color:#d8ccb2}
+details.locs summary{cursor:pointer;font-size:17px;color:var(--accent);padding:8px 0}
+.loclist{columns:2;line-height:1.55}
+.list .pl{display:block;width:100%;min-height:54px;font:inherit;font-size:21px;font-weight:700;text-align:left;padding:10px 14px;margin:6px 0;
+  background:var(--field);color:var(--text);border:2px solid var(--line);border-radius:10px;cursor:pointer;touch-action:manipulation}
+.list .pl.on{border-color:var(--red);background:#3a1714}
+.note{background:#3a1714;border-left:4px solid var(--red);padding:10px 12px;font-size:18px;line-height:1.35}
+.locgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.locgrid button{min-height:52px;font:inherit;font-size:16px;font-weight:700;background:var(--field);color:var(--text);border:2px solid var(--line);
+  border-radius:10px;padding:6px;cursor:pointer;touch-action:manipulation}
+.locgrid button.on{border-color:var(--red);background:#3a1714}
+.locgrid .grp{grid-column:1/-1;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.sticky{position:sticky;bottom:-24px;background:linear-gradient(transparent,var(--folder) 22%);padding:16px 0 18px}
+.score{display:flex;justify-content:center;align-items:center;gap:18px;text-align:center;font-size:16px;color:var(--muted)}
+.score b{display:block;font-size:48px;color:var(--text)}
+.score .colon{font-size:40px;color:var(--text)}
+.tr{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;border-bottom:1px dashed var(--line);font-size:19px}
+.tag{font-size:12px;color:#fff;background:var(--red);padding:2px 6px;border-radius:4px;margin-left:8px;vertical-align:middle;font-weight:700}
+.result-head{display:flex;justify-content:center;margin:10px 0 14px}
+.result-head .stamp{align-self:center}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="folder">
+    <div class="top">
+      <div class="tab" id="caseNo">ДЕЛО № 000</div>
+      <div class="topbtns">
+        <button id="exitBtn" class="ico" hidden>Выход</button>
+        <button id="muteBtn" class="ico" aria-label="Звук">🔊</button>
+      </div>
+    </div>
+    <main id="screen" class="screen"></main>
+  </div>
+</div>
+<script>
+"use strict";
+function parseLocs(s){
+  return s.trim().split('\n').map(function(l){
+    var p=l.split('|');
+    return {name:p[0].trim(),roles:p[1].split(',').map(function(x){return x.trim()})};
+  });
+}
+var SETS=[
+{id:'usual',name:'Обычные',locs:parseLocs(`
+Школа|учитель,ученик-отличник,завуч,охранник,повар в столовой,уборщица
+Больница|хирург,медсестра,пациент,главврач,санитар,посетитель с апельсинами
+Электричка|машинист,контролёр,дачник с рассадой,продавец всякой всячины,студент,безбилетник
+Супермаркет|кассир,охранник,покупатель с тележкой,грузчик,раскладчик товара,директор магазина
+Парикмахерская|мастер,клиент,администратор,ученица мастера,ждущий в очереди
+Стройка|прораб,крановщик,сварщик,разнорабочий,инженер,сторож
+Свадьба|жених,невеста,тамада,свидетель,тёща,фотограф
+Баня|банщик,любитель пара,новичок,продавец веников,отдыхающий в простыне
+Пляж|спасатель,отдыхающий,продавец кукурузы,сёрфер,ребёнок с ведёрком,фотограф
+Кинотеатр|билетёр,зритель,киномеханик,продавец попкорна,парочка на последнем ряду
+Почта|оператор,почтальон,пенсионер за пенсией,получатель посылки,начальник отделения
+Автосервис|механик,шиномонтажник,владелец машины,приёмщик,автоэлектрик
+Дача|хозяин участка,соседка через забор,внук,председатель товарищества,гость на шашлыках
+Зоопарк|смотритель,ветеринар,экскурсовод,посетитель,продавец мороженого,фотограф
+Аэропорт|пилот,стюардесса,пассажир,таможенник,диспетчер,грузчик багажа
+Библиотека|библиотекарь,студент перед сессией,пенсионер с газетой,писатель,школьник
+Пожарная часть|пожарный,водитель машины,начальник караула,диспетчер,новобранец
+Ресторан|шеф-повар,официант,посетитель,сомелье,посудомойщик,администратор
+Отделение полиции|дежурный,следователь,задержанный,потерпевший,участковый
+Цирк|клоун,акробат,дрессировщик,фокусник,зритель,конферансье
+`)},
+{id:'fantasy',name:'Фэнтези',locs:parseLocs(`
+Королевский замок|король,королева,придворный шут,рыцарь,советник,повар
+Таверна|трактирщик,бард,наёмник,гном навеселе,подавальщица,странник
+Башня мага|маг,ученик мага,говорящий ворон,алхимик,покупатель зелья
+Драконье логово|дракон,рыцарь-спаситель,похищенная принцесса,вор сокровищ,оруженосец
+Эльфийский лес|эльф-лучник,друид,лесной дух,заблудившийся путник,старейшина
+Гномьи шахты|гном-рудокоп,кузнец,проводник,хранитель шахты,торговец самоцветами
+Рынок гоблинов|гоблин-торговец,покупатель,карманник,стражник,зазывала
+Кладбище с призраками|некромант,призрак,могильщик,охотник на нечисть,сторож
+Пиратский корабль|капитан,кок,юнга,попугай,штурман,пленник
+Академия магии|ректор,первокурсник,профессор зелий,библиотекарь,привратник
+Рыцарский турнир|рыцарь,герольд,судья,оруженосец,прекрасная дама,зритель
+Болото ведьмы|ведьма,кот ведьмы,заколдованная лягушка,травник,заблудившийся ребёнок
+Лагерь орков|вождь,шаман,пленный эльф,разведчик,повар
+Подземелье|узник,тюремщик,крысолов,стражник с ключами,герой-освободитель
+Храм света|жрец,паломник,послушник,исцелённый,страж храма
+Деревенская ярмарка|кукольник,крестьянин,торговец,глашатай,гадалка
+Ледяная крепость|снежная королева,ледяной великан,полярный охотник,страж,пленник
+Хижина лесника|лесник,охотник,говорящий волк,бабушка,внучка с корзинкой
+Портал между мирами|страж портала,путешественник,демон,учёный маг,контрабандист
+Подводное царство|морской царь,русалка,водяной,осьминог-писарь,моряк в пузыре воздуха
+`)},
+{id:'space',name:'Космос',locs:parseLocs(`
+Орбитальная станция|командир,бортинженер,космонавт-новичок,учёный,космический турист
+Космодром|конструктор,руководитель полёта,техник,журналист,космонавт
+Марсианская колония|губернатор колонии,агроном теплицы,геолог,врач,ребёнок-марсианин
+Луноход|водитель,оператор на Земле,геолог,фотограф,бортовой робот
+Межзвёздный лайнер|капитан,стюард,пассажир первого класса,заяц в трюме,бортовой робот
+Инопланетный рынок|многорукий торговец,турист с Земли,переводчик,воришка,таможенник
+Станция у чёрной дыры|астрофизик,пилот,смотритель,учёный на грани открытия,практикант
+Космическая тюрьма|начальник тюрьмы,заключённый,робот-охранник,адвокат,повар
+Мостик звездолёта|адмирал,пилот,связист,канонир,стажёр
+Астероидная шахта|шахтёр,робот-бур,диспетчер,профсоюзный лидер,торговец кислородом
+Планетарий|лектор,школьник,ночной сторож,мечтатель,кассир
+Корабль пришельцев|капитан пришельцев,похищенный фермер,учёный-пришелец,переводчик,корова
+Космический госпиталь|врач,пациент с другой планеты,медробот,санитар,главврач
+Орбитальный отель|портье,турист,горничная,шеф-повар,миллионер
+Обсерватория в горах|астроном,аспирант,сторож,турист,повар
+Спасательная капсула|пилот,раненый,бортовой ИИ,пассажир в панике,механик
+Космический зоопарк|смотритель,посетитель,существо из туманности,ветеринар,экскурсовод
+Станция на Венере|инженер,химик,пилот,начальник станции,ремонтный робот
+Межпланетные гонки|гонщик,механик,комментатор,болельщик,судья
+Подлёдная база на Европе|океанолог,водолаз,повар,начальник базы,связист
+`)}
+];
+
+var S={n:5,names:[],spies:1,minutes:7,sets:{usual:true,fantasy:false,space:false},
+  roster:[],points:[],score:{civ:0,spy:0},round:0,lastLoc:null,muted:false};
+var R=null, screen='title', exitArmed=false, exitTimer=null;
+
+function $(s){return document.querySelector(s)}
+var scr=$('#screen');
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rnd(n){return Math.floor(Math.random()*n)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1);var t=a[i];a[i]=a[j];a[j]=t}return a}
+function range(n){var a=[];for(var i=0;i<n;i++)a.push(i);return a}
+function players(){return range(S.n).map(function(i){return (S.names[i]||'').trim()||('Игрок '+(i+1))})}
+function anySet(){return SETS.some(function(s){return S.sets[s.id]})}
+function fmt(ms){var s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+
+/* ---------- звук ---------- */
+var ac=null;
+function audio(){
+  if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}}
+  if(ac&&ac.state==='suspended'){try{ac.resume()}catch(e){}}
+  return ac;
+}
+function beep(f,d,type,vol,delay){
+  var a=audio(); if(!a||S.muted)return;
+  var t=a.currentTime+(delay||0);
+  var o=a.createOscillator(),g=a.createGain();
+  o.type=type||'square'; o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(vol||0.15,t+0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+  o.connect(g); g.connect(a.destination);
+  o.start(t); o.stop(t+d+0.03);
+}
+function sClick(){beep(620,0.035,'triangle',0.06)}
+function sTick(strong){beep(strong?1500:1100,0.04,'square',strong?0.22:0.12);beep(strong?700:500,0.03,'square',0.06,0.06)}
+function sAlarm(){for(var i=0;i<6;i++)beep(i%2?660:880,0.2,'sawtooth',0.22,i*0.24);beep(440,0.9,'square',0.2,1.5)}
+function sOpen(){beep(260,0.09,'triangle',0.08)}
+function sWin(spy){
+  var n=spy?[523,440,349,262]:[392,523,659,784];
+  n.forEach(function(f,i){beep(f,0.25,spy?'sawtooth':'triangle',0.16,i*0.16)});
+}
+
+/* ---------- экраны ---------- */
+var SPY_SVG='<svg class="spy" viewBox="0 0 120 80" aria-hidden="true">'+
+ '<path d="M36 44 Q38 12 60 15 Q82 12 84 44 Q60 38 36 44Z" fill="#efe6d2"/>'+
+ '<path d="M37 37 Q60 31 83 37 L84 44 Q60 38 36 44Z" fill="#c8322a"/>'+
+ '<path d="M14 47 Q60 34 106 47 L104 52 Q60 41 16 52Z" fill="#efe6d2"/>'+
+ '<rect x="33" y="57" width="23" height="13" rx="5" fill="#efe6d2"/>'+
+ '<rect x="64" y="57" width="23" height="13" rx="5" fill="#efe6d2"/>'+
+ '<rect x="55" y="60" width="10" height="3" fill="#efe6d2"/></svg>';
+
+var VIEWS={}, AFTER={};
+
+VIEWS.title=function(){return '<div class="title">'+
+ SPY_SVG+'<div class="stamp big">СЕКРЕТНО</div>'+
+ '<h1>Кто<br>шпион?</h1>'+
+ '<p class="lead">Игра для компании на одном телефоне. Все знают, где вы находитесь. Кроме шпиона.</p>'+
+ '<button class="btn primary" data-act="toSetup">Новая игра</button>'+
+ '<button class="btn ghost" data-act="rules">Как играть</button>'+
+ '<p class="credit">Идея: @bildmap-u6s из комментариев</p></div>'};
+
+VIEWS.rules=function(){return '<h2>Как играть</h2><div class="paper">'+
+ '<p><b>Раздача.</b> Телефон идёт по кругу. Каждый держит палец на кнопке и тайком смотрит свою карточку: на ней место, где все «находятся», и его роль там. Шпиону достаётся карточка «Ты шпион», места он не знает.</p>'+
+ '<p><b>Обсуждение.</b> Первый игрок задаёт любому вопрос про место: «Часто тут бываешь?», «Что на тебе надето?». Тот отвечает и спрашивает следующего, но не того, кто спросил его. Отвечайте так, чтобы свои поняли, что вы в теме, а шпион ничего не понял.</p>'+
+ '<p><b>Шпион</b> слушает, выкручивается и пытается угадать место. В любой момент он может открыться кнопкой «Я шпион, знаю локацию» и назвать его. Угадал: победа шпиона. Ошибся: победа мирных.</p>'+
+ '<p><b>Голосование.</b> Когда время вышло или все уверены, выбирайте подозреваемого. Поймали шпиона: победа мирных. Обвинили своего: победа шпиона.</p>'+
+ '<p><b>Очки.</b> Мирные за победу получают по 1 очку, шпион за победу 2 очка.</p></div>'+
+ '<button class="btn primary" data-act="toTitle">Понятно</button>'};
+
+VIEWS.setup=function(){
+ var p=range(S.n).map(function(i){return '<input class="name" data-i="'+i+'" maxlength="14" placeholder="Игрок '+(i+1)+'" value="'+esc(S.names[i]||'')+'" autocomplete="off" enterkeyhint="next">'}).join('');
+ return '<h2>Новое дело</h2>'+
+ '<div class="lbl">Игроков</div>'+
+ '<div class="stepper"><button data-act="n" data-v="-1" '+(S.n<=3?'disabled':'')+'>−</button><span>'+S.n+'</span><button data-act="n" data-v="1" '+(S.n>=10?'disabled':'')+'>+</button></div>'+
+ '<div class="lbl">Имена</div><div class="names">'+p+'</div>'+
+ '<div class="lbl">Шпионов</div>'+
+ '<div class="seg">'+[1,2].map(function(v){return '<button data-act="spies" data-v="'+v+'" class="'+(S.spies===v?'on':'')+'" '+(v===2&&S.n<5?'disabled':'')+'>'+v+'</button>'}).join('')+'</div>'+
+ (S.n<5?'<div class="small" style="margin-top:6px">Два шпиона можно от 5 игроков</div>':'')+
+ '<div class="lbl">Время обсуждения</div>'+
+ '<div class="seg">'+[5,7,10].map(function(v){return '<button data-act="min" data-v="'+v+'" class="'+(S.minutes===v?'on':'')+'">'+v+' мин</button>'}).join('')+'</div>'+
+ '<div class="lbl">Наборы локаций</div>'+
+ '<div class="seg col">'+SETS.map(function(s){return '<button data-act="set" data-v="'+s.id+'" class="'+(S.sets[s.id]?'on':'')+'">'+(S.sets[s.id]?'☑':'☐')+' '+s.name+' <small>('+s.locs.length+')</small></button>'}).join('')+'</div>'+
+ (S.round>0?'<div class="small" style="margin-top:10px">Новая раздача отсюда обнулит счёт.</div>':'')+
+ '<button class="btn primary" data-act="start" '+(anySet()?'':'disabled')+'>Раздать карточки</button>'+
+ '<button class="btn ghost" data-act="toTitle">Назад</button>';
+};
+
+function closedCard(){return '<div class="closed"><div class="stamp">СЕКРЕТНО</div><div class="small">Карточка закрыта</div></div>'}
+function openCard(i){
+ if(R.spies.indexOf(i)>=0){
+  return '<div class="paper card spy"><div class="stamp big">ТЫ ШПИОН</div>'+
+   '<p>Ты не знаешь, где все находятся. Слушай, задавай хитрые вопросы и попробуй угадать место.</p>'+
+   (R.spies.length>1?'<p style="color:#6b5d48;font-size:15px">Есть второй шпион, но кто это, ты не знаешь.</p>':'')+'</div>';
+ }
+ return '<div class="paper card"><div class="k">Локация</div><div class="v">'+esc(R.loc.name)+'</div>'+
+  '<div class="k">Твоя роль</div><div class="v role">'+esc(R.roles[i])+'</div></div>';
+}
+
+VIEWS.deal=function(){
+ var last=R.dealIdx===R.n-1;
+ return '<div class="small center">Карточка '+(R.dealIdx+1)+' из '+R.n+'</div>'+
+ '<div class="pass">Передайте телефон:<div class="who">'+esc(S.roster[R.dealIdx])+'</div></div>'+
+ '<div id="cardBox" class="cardbox">'+closedCard()+'</div>'+
+ '<div id="hold" class="hold"><span>Держите палец здесь,<br>чтобы посмотреть</span></div>'+
+ '<div id="nextWrap" '+(R.seen?'':'hidden')+'><button class="btn primary" data-act="next">'+
+ (last?'Все посмотрели. Начать':'Готово. Передать: '+esc(S.roster[R.dealIdx+1]))+'</button></div>';
+};
+AFTER.deal=function(){
+ var h=$('#hold');
+ h.addEventListener('pointerdown',function(e){e.preventDefault();try{h.setPointerCapture(e.pointerId)}catch(_){}showCard()});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(function(ev){h.addEventListener(ev,hideCard)});
+ h.addEventListener('contextmenu',function(e){e.preventDefault()});
+};
+function showCard(){
+ if(screen!=='deal'||!R||R.holding)return;
+ audio(); R.holding=true; R.seen=true;
+ $('#cardBox').innerHTML=openCard(R.dealIdx);
+ $('#hold').classList.add('down');
+ $('#hold span').innerHTML='Отпустите,<br>чтобы закрыть';
+ sOpen();
+}
+function hideCard(){
+ if(screen!=='deal'||!R||!R.holding)return;
+ R.holding=false;
+ $('#cardBox').innerHTML=closedCard();
+ $('#hold').classList.remove('down');
+ $('#hold span').innerHTML='Держите палец здесь,<br>чтобы посмотреть';
+ $('#nextWrap').hidden=false;
+}
+
+function locListHTML(){
+ return '<details class="locs"><summary>Все возможные локации ('+R.pool.length+')</summary><div class="loclist">'+
+  R.pool.map(function(l){return esc(l.name)}).join('<br>')+'</div></details>';
+}
+VIEWS.discuss=function(){
+ var rem=remaining();
+ return '<div class="first">Первым спрашивает:<div class="who">'+esc(S.roster[R.first])+'</div></div>'+
+ '<div id="timer" class="timer'+(rem<=30000?' warn':'')+'">'+fmt(rem)+'</div>'+
+ (R.timeUp?'<div class="stamp big timeup">ВРЕМЯ ВЫШЛО</div><button class="btn primary" data-act="toVote">К голосованию</button>':
+  '<div class="row2"><button class="btn ghost" data-act="pause">'+(R.running?'Пауза':'Дальше')+'</button><button class="btn primary" data-act="toVote">Голосовать</button></div>')+
+ '<button class="btn ghostred" data-act="spyBtn">Я шпион, знаю локацию</button>'+
+ '<div class="paper rules"><b>Коротко.</b> Задавайте друг другу вопросы о месте, где все находятся. Отвечайте так, чтобы свои поняли, что вы в теме, а шпион не догадался. Кто ответил, спрашивает следующего, но не того, кто спросил его. Шпион угадывает место по ответам и может открыться в любой момент. Кого подозреваете, того обвиняйте на голосовании.</div>'+
+ locListHTML();
+};
+
+VIEWS.vote=function(){
+ if(!R.voteMode){
+  return '<h2>Голосование</h2><p class="lead">Как голосуем?</p>'+
+  '<button class="btn primary" data-act="vmode" data-v="group">Общим списком<small>Договоритесь вслух и отметьте одного</small></button>'+
+  '<button class="btn primary" data-act="vmode" data-v="turn">По очереди, тайно<small>Телефон идёт по кругу, каждый выбирает сам</small></button>'+
+  '<button class="btn ghost" data-act="backDiscuss">Вернуться к обсуждению</button>'+
+  '<button class="btn ghostred" data-act="spyBtn">Я шпион, знаю локацию</button>';
+ }
+ if(R.voteMode==='group'){
+  var c=R.candidates||range(R.n);
+  return '<h2>Кто шпион?</h2>'+
+  (R.tieMsg?'<p class="note">'+esc(R.tieMsg)+'</p>':'<p class="lead">Решите вместе и отметьте подозреваемого.</p>')+
+  '<div class="list">'+c.map(function(i){return '<button class="pl '+(R.sel===i?'on':'')+'" data-act="vsel" data-v="'+i+'">'+esc(S.roster[i])+'</button>'}).join('')+'</div>'+
+  '<button class="btn red" data-act="accuse" '+(R.sel==null?'disabled':'')+'>'+(R.sel==null?'Выберите игрока':'Обвинить: '+esc(S.roster[R.sel]))+'</button>'+
+  (R.candidates?'':'<button class="btn ghost" data-act="vmode" data-v="">Другой способ</button>')+
+  '<button class="btn ghostred" data-act="spyBtn">Я шпион, знаю локацию</button>';
+ }
+ var v=R.voteIdx;
+ return '<div class="small center">Голос '+(v+1)+' из '+R.n+'</div>'+
+ '<div class="pass">Передайте телефон:<div class="who">'+esc(S.roster[v])+'</div></div>'+
+ '<p class="lead">Кого ты считаешь шпионом? Нажми на имя: голос засчитается сразу и тайно.</p>'+
+ '<div class="list">'+S.roster.map(function(n,i){return i===v?'':'<button class="pl" data-act="tvote" data-v="'+i+'">'+esc(n)+'</button>'}).join('')+'</div>'+
+ '<button class="btn ghostred" data-act="spyBtn">Я шпион, знаю локацию</button>';
+};
+
+VIEWS.reveal=function(){
+ return '<h2 class="center">Обвиняется</h2><div class="who">'+esc(S.roster[R.accused])+'</div>'+
+ (R.tallyText?'<p class="small center">Голоса: '+esc(R.tallyText)+'</p>':'')+
+ '<p class="lead center">Сейчас станет ясно, шпион это или нет.</p>'+
+ '<button class="btn red" data-act="revealOk">Вскрыть карточку</button>';
+};
+
+VIEWS.guess=function(){
+ if(R.notSpy!=null){
+  return '<h2>Ошибочка</h2><p class="lead">'+esc(S.roster[R.notSpy])+', ты не шпион. Эта кнопка только для шпиона. Возвращайтесь к игре.</p>'+
+  '<button class="btn primary" data-act="guessBack">Вернуться</button>';
+ }
+ if(R.guesser==null){
+  return '<h2>Шпион открывается</h2><p class="lead">Кто ты? Нажми своё имя.</p>'+
+  '<div class="list">'+S.roster.map(function(n,i){return '<button class="pl" data-act="guessWho" data-v="'+i+'">'+esc(n)+'</button>'}).join('')+'</div>'+
+  '<button class="btn ghost" data-act="guessBack">Отмена</button>';
+ }
+ var grid='', grp=null;
+ R.pool.forEach(function(l,i){
+  if(R.multiSet&&l.set!==grp){grp=l.set;grid+='<div class="grp">'+esc(grp)+'</div>'}
+  grid+='<button class="'+(R.guess===i?'on':'')+'" data-act="guessLoc" data-v="'+i+'">'+esc(l.name)+'</button>';
+ });
+ return '<h2>Где все находятся?</h2><p class="lead">'+esc(S.roster[R.guesser])+', выбери локацию. Попытка одна.</p>'+
+ '<div class="locgrid">'+grid+'</div>'+
+ '<div class="sticky"><button class="btn red" data-act="guessOk" '+(R.guess==null?'disabled':'')+'>'+
+ (R.guess==null?'Выберите место':'Это точно: '+esc(R.pool[R.guess].name))+'</button></div>';
+};
+
+VIEWS.result=function(){
+ var spyWin=R.win==='spy', many=R.spies.length>1;
+ var spyNames=R.spies.map(function(i){return esc(S.roster[i])}).join(', ');
+ var reason;
+ if(R.kind==='guess'){
+  var g=esc(S.roster[R.guesser]);
+  reason=spyWin?'Шпион '+g+' угадал локацию.':'Шпион '+g+' ошибся и назвал «'+esc(R.pool[R.guess].name)+'».';
+ }else{
+  var a=esc(S.roster[R.accused]);
+  reason=spyWin?'Обвинили мирного: '+a+'. '+(many?'Шпионы ушли.':'Шпион ушёл.'):'Шпион вычислен: '+a+'.';
+ }
+ var order=range(R.n).sort(function(a,b){return S.points[b]-S.points[a]});
+ return '<div class="result-head"><div class="stamp big '+(spyWin?'':'green')+'">ПОБЕДА<br>'+(spyWin?(many?'ШПИОНОВ':'ШПИОНА'):'МИРНЫХ')+'</div></div>'+
+ '<p class="lead center">'+reason+'</p>'+
+ '<div class="paper card"><div class="k">Локация</div><div class="v">'+esc(R.loc.name)+'</div>'+
+ '<div class="k">'+(many?'Шпионы':'Шпион')+'</div><div class="v role">'+spyNames+'</div></div>'+
+ '<h3>Счёт сессии · раунд '+S.round+'</h3>'+
+ '<div class="score"><div><b>'+S.score.civ+'</b>Мирные</div><div class="colon">:</div><div><b>'+S.score.spy+'</b>Шпионы</div></div>'+
+ '<div style="margin-top:10px">'+order.map(function(i){return '<div class="tr"><span>'+esc(S.roster[i])+(R.spies.indexOf(i)>=0?'<span class="tag">шпион</span>':'')+'</span><b>'+S.points[i]+'</b></div>'}).join('')+'</div>'+
+ '<button class="btn primary" data-act="again">Ещё раунд</button>'+
+ '<button class="btn ghost" data-act="toSetup">Изменить игроков</button>'+
+ '<button class="btn ghost" data-act="toTitle">В начало</button>';
+};
+
+/* ---------- логика ---------- */
+function go(s){screen=s;render()}
+function render(){
+ var ex=$('#exitBtn');
+ ex.hidden=!(R&&['deal','discuss','vote','guess','reveal'].indexOf(screen)>=0);
+ exitArmed=false;ex.textContent='Выход';ex.classList.remove('armed');
+ $('#caseNo').textContent='ДЕЛО № '+String(S.round).padStart(3,'0');
+ scr.innerHTML=VIEWS[screen]();
+ scr.scrollTop=0;
+ if(AFTER[screen])AFTER[screen]();
+}
+
+function newRound(){
+ var pool=[];
+ SETS.forEach(function(s){if(S.sets[s.id])s.locs.forEach(function(l){pool.push({name:l.name,roles:l.roles,set:s.name})})});
+ var loc;
+ do{loc=pool[rnd(pool.length)]}while(pool.length>1&&loc.name===S.lastLoc);
+ var n=S.roster.length, k=Math.min(S.spies,n>=5?2:1);
+ var spies=shuffle(range(n)).slice(0,k);
+ var rp=[]; while(rp.length<n)rp=rp.concat(shuffle(loc.roles));
+ var sorted=[];
+ SETS.forEach(function(s){
+  if(!S.sets[s.id])return;
+  sorted=sorted.concat(pool.filter(function(l){return l.set===s.name}).sort(function(a,b){return a.name.localeCompare(b.name,'ru')}));
+ });
+ S.round++;
+ R={n:n,loc:loc,pool:sorted,multiSet:SETS.filter(function(s){return S.sets[s.id]}).length>1,
+  spies:spies,roles:rp.slice(0,n),dealIdx:0,seen:false,holding:false,first:rnd(n),
+  timeLeft:S.minutes*60000,running:false,timeUp:false,end:0,lastSec:null,
+  voteMode:null,votes:[],voteIdx:0,sel:null,candidates:null,tieMsg:null,tallyText:null,
+  accused:null,guess:null,guesser:null,notSpy:null,backTo:'discuss'};
+ go('deal');
+}
+function remaining(){return R.running?Math.max(0,R.end-performance.now()):R.timeLeft}
+function pauseTimer(){if(R&&R.running){R.timeLeft=Math.max(0,R.end-performance.now());R.running=false}}
+function resume(){if(R&&!R.timeUp&&!R.running&&R.timeLeft>0){R.end=performance.now()+R.timeLeft;R.running=true;R.lastSec=null}}
+function startDiscuss(){resume();go('discuss')}
+
+function tally(){
+ var c=range(R.n).map(function(){return 0});
+ R.votes.forEach(function(v){c[v]++});
+ var max=Math.max.apply(null,c);
+ var tied=range(R.n).filter(function(i){return c[i]===max});
+ R.tallyText=range(R.n).filter(function(i){return c[i]>0}).sort(function(a,b){return c[b]-c[a]})
+  .map(function(i){return S.roster[i]+' '+c[i]}).join(', ');
+ if(tied.length===1){R.accused=tied[0];go('reveal')}
+ else{
+  R.candidates=tied;R.voteMode='group';R.sel=null;
+  R.tieMsg='Ничья: '+tied.map(function(i){return S.roster[i]}).join(', ')+'. Решите вместе, кого обвинить.';
+  render();
+ }
+}
+
+function finish(kind){
+ pauseTimer();R.running=false;R.kind=kind;
+ var win;
+ if(kind==='guess')win=R.pool[R.guess].name===R.loc.name?'spy':'civ';
+ else win=R.spies.indexOf(R.accused)>=0?'civ':'spy';
+ R.win=win;S.score[win]++;
+ S.roster.forEach(function(_,i){
+  var isSpy=R.spies.indexOf(i)>=0;
+  if(win==='spy'&&isSpy)S.points[i]+=2;
+  if(win==='civ'&&!isSpy)S.points[i]+=1;
+ });
+ S.lastLoc=R.loc.name;
+ sWin(win==='spy');
+ go('result');
+}
+
+var ACT={
+ toSetup:function(){go('setup')},
+ rules:function(){go('rules')},
+ toTitle:function(){pauseTimer();R=null;go('title')},
+ n:function(v){S.n=Math.min(10,Math.max(3,S.n+(+v)));if(S.n<5)S.spies=1;go('setup')},
+ spies:function(v){S.spies=+v;go('setup')},
+ min:function(v){S.minutes=+v;go('setup')},
+ set:function(v){S.sets[v]=!S.sets[v];go('setup')},
+ start:function(){S.roster=players();S.points=S.roster.map(function(){return 0});S.score={civ:0,spy:0};S.round=0;newRound()},
+ again:function(){newRound()},
+ next:function(){R.dealIdx++;R.seen=false;R.holding=false;if(R.dealIdx>=R.n)startDiscuss();else render()},
+ pause:function(){if(R.running)pauseTimer();else resume();render()},
+ toVote:function(){pauseTimer();go('vote')},
+ backDiscuss:function(){resume();go('discuss')},
+ spyBtn:function(){pauseTimer();R.backTo=screen;R.guesser=null;R.guess=null;R.notSpy=null;go('guess')},
+ guessWho:function(v){v=+v;if(R.spies.indexOf(v)>=0)R.guesser=v;else R.notSpy=v;render()},
+ guessLoc:function(v){var y=scr.scrollTop;R.guess=+v;render();scr.scrollTop=y},
+ guessOk:function(){if(R.guess!=null)finish('guess')},
+ guessBack:function(){R.notSpy=null;if(R.backTo==='discuss')resume();go(R.backTo)},
+ vmode:function(v){R.voteMode=v||null;R.votes=[];R.voteIdx=0;R.sel=null;go('vote')},
+ vsel:function(v){var y=scr.scrollTop;R.sel=+v;render();scr.scrollTop=y},
+ accuse:function(){if(R.sel!=null){R.accused=R.sel;if(R.voteMode==='group'&&!R.candidates)R.tallyText=null;go('reveal')}},
+ tvote:function(v){R.votes.push(+v);R.voteIdx++;if(R.voteIdx>=R.n)tally();else render()},
+ revealOk:function(){finish('accuse')}
+};
+
+scr.addEventListener('click',function(e){
+ var b=e.target.closest('[data-act]');
+ if(!b||b.disabled)return;
+ audio();sClick();
+ var f=ACT[b.dataset.act]; if(f)f(b.dataset.v);
+});
+scr.addEventListener('input',function(e){
+ if(e.target.matches('input.name'))S.names[+e.target.dataset.i]=e.target.value;
+});
+
+$('#muteBtn').addEventListener('click',function(){
+ S.muted=!S.muted;this.textContent=S.muted?'🔇':'🔊';if(!S.muted){audio();sClick()}
+});
+$('#exitBtn').addEventListener('click',function(){
+ var b=this;
+ if(!exitArmed){
+  exitArmed=true;b.textContent='Точно выйти?';b.classList.add('armed');
+  clearTimeout(exitTimer);exitTimer=setTimeout(function(){exitArmed=false;b.textContent='Выход';b.classList.remove('armed')},3000);
+ }else{clearTimeout(exitTimer);pauseTimer();R=null;go('title')}
+});
+
+document.addEventListener('keydown',function(e){
+ if(e.target.tagName==='INPUT'){
+  if(e.key==='Enter'){
+   var i=+e.target.dataset.i, nx=scr.querySelector('input.name[data-i="'+(i+1)+'"]');
+   if(nx)nx.focus();else e.target.blur();
+  }
+  return;
+ }
+ if(screen==='deal'&&e.code==='Space'){e.preventDefault();if(!e.repeat)showCard();return}
+ if(e.key==='Enter'&&!e.repeat){
+  var btns=scr.querySelectorAll('.btn.primary,.btn.red');
+  for(var j=0;j<btns.length;j++){if(!btns[j].disabled&&btns[j].offsetParent){btns[j].click();break}}
+ }
+});
+document.addEventListener('keyup',function(e){if(e.code==='Space')hideCard()});
+window.addEventListener('blur',hideCard);
+document.addEventListener('visibilitychange',function(){if(document.hidden)hideCard()});
+document.addEventListener('touchmove',function(e){if(!e.target.closest('.screen'))e.preventDefault()},{passive:false});
+
+setInterval(function(){
+ if(screen!=='discuss'||!R||!R.running)return;
+ var rem=R.end-performance.now();
+ var sec=Math.max(0,Math.ceil(rem/1000));
+ var t=document.getElementById('timer');
+ if(t){t.textContent=fmt(rem);t.classList.toggle('warn',sec<=30)}
+ if(sec!==R.lastSec){R.lastSec=sec;if(sec>0&&sec<=30)sTick(sec<=10)}
+ if(rem<=0){R.running=false;R.timeLeft=0;R.timeUp=true;sAlarm();render()}
+},100);
+
+render();
+</script>
+</body>
+</html>

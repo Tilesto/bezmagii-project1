@@ -251,6 +251,70 @@
     color: var(--base-60);
 }
 
+// ── примеры игр: стикеры с кадром из игры ───────────────────────────────────
+.examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li:nth-child(odd) .example {
+        transform: rotate(-0.6deg);
+    }
+
+    li:nth-child(even) .example {
+        transform: rotate(0.6deg);
+    }
+}
+
+.example {
+    @include sticker;
+    @include focus-ring;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    padding: 10px 10px 16px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+        transform 120ms ease,
+        box-shadow 120ms ease;
+
+    &:hover {
+        transform: translate(-2px, -2px) rotate(-0.6deg);
+        box-shadow: calc(var(--lift) + 2px) calc(var(--lift) + 2px) 0 var(--shade);
+
+        .example-title {
+            color: var(--primary-1);
+        }
+    }
+
+    .game-meta {
+        padding: 0 6px;
+    }
+}
+
+.shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: var(--stroke) solid var(--ink);
+    border-radius: var(--brBase);
+    background-color: var(--ink);
+}
+
+.example-title {
+    padding: 4px 6px 0;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
 // ── что важно знать ──────────────────────────────────────────────────────────
 .notes {
     display: grid;

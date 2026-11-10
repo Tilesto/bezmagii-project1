@@ -1,0 +1,77 @@
+@use 'mixins' as *;
+
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 16px;
+}
+
+.back {
+    @include focus-ring;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary-1);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+
+    @include mobile {
+        font-size: 24px;
+        flex-basis: 100%;
+    }
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 12px;
+    border: var(--stroke) solid var(--ink);
+    border-radius: 999px;
+    background-color: var(--star);
+    color: var(--on-cat);
+    font-family: var(--fontMono);
+    font-size: 13px;
+    font-weight: 800;
+    transform: rotate(-2deg);
+}
+
+.idea {
+    font-family: var(--fontMono);
+    font-size: 14px;
+    color: var(--base-80);
+}
+
+.placeholder {
+    @include sticker;
+    display: grid;
+    place-items: center;
+    height: calc(100dvh - var(--hTopBar) - 220px);
+    min-height: 360px;
+    border-style: dashed;
+    background-color: var(--cat-soft);
+    color: var(--base-80);
+}
