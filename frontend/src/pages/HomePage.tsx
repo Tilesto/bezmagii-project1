@@ -20,9 +20,11 @@ const time = (ts: number) =>
         minute: '2-digit',
     });
 
-// Последнее слово заголовка — под маркером, как «через день» в каталоге.
+// Последнее слово заголовка — под маркером, как «через день» в каталоге. Короткий предлог
+// перед ним («по запросу») идёт вместе со словом, чтобы не висел в конце строки.
 const words = project.title.trim().split(/\s+/);
-const last = words.pop() ?? '';
+const tail = words.length > 2 && (words[words.length - 2]?.length ?? 0) <= 2 ? 2 : 1;
+const last = words.splice(-tail).join(' ');
 const head = words.join(' ');
 
 export function HomePage() {
