@@ -94,6 +94,8 @@ html.theme-transition *::after {
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
+        // иначе бесконечные анимации (infinite) крутятся каждые 0,01 мс и мерцают
+        animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
 }
